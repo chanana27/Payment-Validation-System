@@ -26,7 +26,7 @@ public class ValidatorRule1 implements Validator {
 				ErrorCodeEnum.INVALID_AMOUNT.getErrorMessage(),
 				HttpStatus.BAD_REQUEST);
 			
-			log.info("Raising Validation Exception {}", validationException);
+			log.error("Raising Validation Exception {}", validationException);
 			
 			throw validationException;
 			

@@ -23,7 +23,7 @@ public class ValidationExceptionHandler {
 		 	return new ResponseEntity<>(paymentError, ex.getHttpStatus());
 		 
 	    }
-	 
+	  
 	 @ExceptionHandler(Exception.class)
 	    public ResponseEntity<PaymentError> handleGenericError(Exception ex) {
 	        
