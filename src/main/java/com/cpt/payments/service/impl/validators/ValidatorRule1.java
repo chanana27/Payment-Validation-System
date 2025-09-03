@@ -18,7 +18,7 @@ public class ValidatorRule1 implements Validator {
 	public void validate(PaymentRequestDTO paymentRequestDTO) {
 		log.info("Validating payment request: {}", paymentRequestDTO);
 		
-		if(paymentRequestDTO.getAmount() < 0) {
+		if(paymentRequestDTO.getPayment().getAmount() < 0) {
 			log.error("ValidatorRule1| Payment request validation failed. Amount cannot be negative");
 			
 			ValidationException validationException = new ValidationException(

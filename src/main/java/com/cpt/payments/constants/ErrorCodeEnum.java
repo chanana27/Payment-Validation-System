@@ -3,7 +3,8 @@ package com.cpt.payments.constants;
 public enum ErrorCodeEnum {
 
 	 	GENERIC_ERROR("10000", "Something went wrong. Please try again later!"),
-	    INVALID_AMOUNT("10001", "Amount cannot be negative. Please correct and try again!");
+	    INVALID_AMOUNT("10001", "Amount cannot be negative. Please correct and try again!"),
+		DUPLICATE_TXN("10002", "MerchantTxnRef must be unique!");
 
 	    private final String errorCode;
 	    private final String errorMessage;

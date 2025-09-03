@@ -7,10 +7,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @SpringBootApplication
-public class PaypalProviderServiceApplication {
+public class PaymentValidationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PaypalProviderServiceApplication.class, args);
+		SpringApplication.run(PaymentValidationServiceApplication.class, args);
 	}
-
 }
