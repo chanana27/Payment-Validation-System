@@ -1,15 +1,19 @@
 package com.cpt.payments.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.cpt.payments.constants.ValidatorEnum;
+import com.cpt.payments.dao.ValidatorRuleDao;
 import com.cpt.payments.dto.PaymentRequestDTO;
 import com.cpt.payments.dto.PaymentResponseDTO;
 import com.cpt.payments.service.interfaces.PaymentService;
 import com.cpt.payments.service.interfaces.Validator;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -19,23 +23,30 @@ public class PaymentServiceImpl implements PaymentService {
 	@Value("${validator.rules}")
 	String validatorRules;
 	
+	private List<String> activeValidationRules;
+	
 	private ApplicationContext applicationContext;
+	private ValidatorRuleDao validatorRuleDao;
 	
 	
-	public PaymentServiceImpl(ApplicationContext applicationContext) {
+	public PaymentServiceImpl(ApplicationContext applicationContext, ValidatorRuleDao validatorRuleDao) {
 		this.applicationContext = applicationContext;
+		this.validatorRuleDao = validatorRuleDao;
 	}
 	
 	@Override
 	public PaymentResponseDTO validateAndInitiatePayment(PaymentRequestDTO paymentRequestDTO) {
 		log.info("Received paymentRequestDTO as {}", paymentRequestDTO);
 		
-		String[] rules = validatorRules.split(",");
+//		String[] rules = validatorRules.split(",");
 		
-		for(String rule: rules) {
-			triggerValidationRule(paymentRequestDTO, rule);
-			
-		}
+//		for(String rule: rules) {
+//			triggerValidationRule(paymentRequestDTO, rule);
+//			
+//		}
+		
+		activeValidationRules.forEach(rule -> triggerValidationRule(paymentRequestDTO, rule));
+		
 		
 		log.info("Payment Request Validated successfully. All rules passed");
 		
@@ -73,5 +84,12 @@ public class PaymentServiceImpl implements PaymentService {
 					validatorClass, validator);
 		}
 		return rule;
+	}
+	
+	@PostConstruct
+	private List<String> loadActiveValidationRules(){
+		activeValidationRules = validatorRuleDao.loadActiveValidatorNames();
+		log.info("Loaded activeValidatorRules form Database as {}", activeValidationRules);
+		return activeValidationRules;
 	}
 }

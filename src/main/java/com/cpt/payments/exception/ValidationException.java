@@ -6,10 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class ValidationException extends RuntimeException{
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 805448315017754210L;
 	private final String errorCode;
 	private final String errorMessage;

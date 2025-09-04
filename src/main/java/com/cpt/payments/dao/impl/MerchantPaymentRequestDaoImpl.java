@@ -1,14 +1,12 @@
 package com.cpt.payments.dao.impl;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.cpt.payments.constants.ErrorCodeEnum;
+import com.cpt.payments.constants.MerchantReqUpdate;
 import com.cpt.payments.dao.MerchantPaymentRequestDao;
-import com.cpt.payments.entity.PaymentRequestEntity;
-import com.cpt.payments.exception.ValidationException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,37 +14,45 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MerchantPaymentRequestDaoImpl implements MerchantPaymentRequestDao {
 
-	private final NamedParameterJdbcTemplate jdbcTemplate;
-	
-	public MerchantPaymentRequestDaoImpl(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-	
+	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+	public MerchantPaymentRequestDaoImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+	}
+
 	@Override
-	public int insertPaymentIntoDB(PaymentRequestEntity entity) {
-		
-		 String sql = "INSERT INTO merchant_payment_request " +
-                 "(endUserID, merchantTransactionReference, transactionRequest, creationDate) " +
-                 "VALUES (:endUserID, :merchantTransactionReference, :transactionRequest, :creationDate)";	
-		 
-		 MapSqlParameterSource params = new MapSqlParameterSource()
-	                .addValue("endUserID", entity.getEndUserID())
-	                .addValue("merchantTransactionReference", entity.getMerchantTransactionReference())
-	                .addValue("transactionRequest", entity.getTransactionRequest())
-	                .addValue("creationDate", entity.getCreationDate());
-		 
-		 int result;
-		 try {
-			 result = jdbcTemplate.update(sql, params); 
-		 }catch (Exception e) {
-			 throw new ValidationException(
-						ErrorCodeEnum.DUPLICATE_TXN.getErrorCode(), 
-						ErrorCodeEnum.DUPLICATE_TXN.getErrorMessage(),
-						HttpStatus.BAD_REQUEST);
-		 }
-		 
-		 log.info("Payment created in DB");
-		 return result;
+	public MerchantReqUpdate insertMerchantPaymentRequest(String endUserID, String merchantTransactionReference,
+			String transactionRequest) {
+
+		log.debug(
+				"Inserting merchant payment request in DB endUserId:{}"
+						+ "|merchantTransactionReference:{}"
+						+ "|transactionRequest:{}",
+						endUserID, merchantTransactionReference, transactionRequest);
+
+		String sql = "INSERT INTO merchant_payment_request " +
+				"(endUserID, merchantTransactionreference, transactionRequest) " +
+				"VALUES (:endUserID, :merchantTransactionReference, :transactionRequest)";	
+
+		log.info("Inserting merchant payment request in DB: {}", sql);
+
+		MapSqlParameterSource params = new MapSqlParameterSource()
+				.addValue("endUserID", endUserID)
+				.addValue("merchantTransactionReference", merchantTransactionReference)
+				.addValue("transactionRequest", transactionRequest);
+
+		try {
+            int insertedRow = namedParameterJdbcTemplate.update(sql, params);
+
+            log.info("Merchant payment request inserted in DB. Rows inserted: {}", insertedRow);
+            return (insertedRow == 1 ? MerchantReqUpdate.SAVED : MerchantReqUpdate.ERROR);
+        } catch (DuplicateKeyException e) {
+            log.error("Error occurred while inserting merchant payment request in DB {}", e.getMessage());
+            return MerchantReqUpdate.DUPLICATE;
+		} catch (Exception e) {
+			log.error("Error occurred while inserting merchant payment request in DB {}", e.getMessage());
+			return MerchantReqUpdate.ERROR;
+		}
 	}
 
 }

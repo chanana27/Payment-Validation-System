@@ -1,8 +1,10 @@
 package com.cpt.payments.dao;
 
-import com.cpt.payments.entity.PaymentRequestEntity;
+import com.cpt.payments.constants.MerchantReqUpdate;
 
 public interface MerchantPaymentRequestDao {
 	
-	public int insertPaymentIntoDB(PaymentRequestEntity entity);
+	public MerchantReqUpdate insertMerchantPaymentRequest(String endUserID, 
+            String merchantTransactionReference, 
+            String transactionRequest);
 }
