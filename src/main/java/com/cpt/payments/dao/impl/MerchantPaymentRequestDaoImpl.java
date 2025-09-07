@@ -1,5 +1,9 @@
 package com.cpt.payments.dao.impl;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -42,17 +46,39 @@ public class MerchantPaymentRequestDaoImpl implements MerchantPaymentRequestDao 
 				.addValue("transactionRequest", transactionRequest);
 
 		try {
-            int insertedRow = namedParameterJdbcTemplate.update(sql, params);
+			int insertedRow = namedParameterJdbcTemplate.update(sql, params);
 
-            log.info("Merchant payment request inserted in DB. Rows inserted: {}", insertedRow);
-            return (insertedRow == 1 ? MerchantReqUpdate.SAVED : MerchantReqUpdate.ERROR);
-        } catch (DuplicateKeyException e) {
-            log.error("Error occurred while inserting merchant payment request in DB {}", e.getMessage());
-            return MerchantReqUpdate.DUPLICATE;
+			log.info("Merchant payment request inserted in DB. Rows inserted: {}", insertedRow);
+			return (insertedRow == 1 ? MerchantReqUpdate.SAVED : MerchantReqUpdate.ERROR);
+		} catch (DuplicateKeyException e) {
+			log.error("Error occurred while inserting merchant payment request in DB {}", e.getMessage());
+			return MerchantReqUpdate.DUPLICATE;
 		} catch (Exception e) {
 			log.error("Error occurred while inserting merchant payment request in DB {}", e.getMessage());
 			return MerchantReqUpdate.ERROR;
 		}
+	}
+
+	@Override
+	public int getCountOfPaymentsInLastXMinutes(String endUserId, int durationInMins) {
+
+		String sql = "SELECT COUNT(*) FROM validations.merchant_payment_request " +
+				"WHERE endUserID = :endUserId " +
+				"AND creationDate BETWEEN :startTime AND :currentTime";
+
+		// Calculate the start time
+		LocalDateTime currentTime = LocalDateTime.now();
+		LocalDateTime startTime = currentTime.minusMinutes(durationInMins);
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("endUserId", endUserId);
+		params.put("currentTime", currentTime);
+		params.put("startTime", startTime);
+		
+		int count = namedParameterJdbcTemplate.queryForObject(sql, params, Integer.class);
+
+		log.info("Count of Payments in last {} minutes is {}", durationInMins, count);
+		return count;
 	}
 
 }

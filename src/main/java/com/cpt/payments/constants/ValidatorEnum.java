@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cpt.payments.service.impl.validators.DuplicateTxnCheck;
+import com.cpt.payments.service.impl.validators.PaymentAttemptThresholdCheck;
 import com.cpt.payments.service.impl.validators.ValidatorRule1;
 import com.cpt.payments.service.interfaces.Validator;
 
@@ -13,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public enum ValidatorEnum {
 	
 	    VALIDATOR_RULE1("VALIDATOR_RULE1", ValidatorRule1.class),
-	    DUPLICATE_TXN_CHECK("DUPLICATE_TXN_CHECK", DuplicateTxnCheck.class);
+	    DUPLICATE_TXN_CHECK("DUPLICATE_TXN_CHECK", DuplicateTxnCheck.class),
+		PAYMENT_ATTEMPT_THRESHOLD_CHECK("PAYMENT_ATTEMPT_THRESHOLD_CHECK", PaymentAttemptThresholdCheck.class);
 
 	    private static final Map<String, ValidatorEnum> NAME_TO_ENUM_MAP = new HashMap<>();
 

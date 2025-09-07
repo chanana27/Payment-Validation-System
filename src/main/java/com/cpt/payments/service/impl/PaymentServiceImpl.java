@@ -38,12 +38,6 @@ public class PaymentServiceImpl implements PaymentService {
 	public PaymentResponseDTO validateAndInitiatePayment(PaymentRequestDTO paymentRequestDTO) {
 		log.info("Received paymentRequestDTO as {}", paymentRequestDTO);
 		
-//		String[] rules = validatorRules.split(",");
-		
-//		for(String rule: rules) {
-//			triggerValidationRule(paymentRequestDTO, rule);
-//			
-//		}
 		
 		activeValidationRules.forEach(rule -> triggerValidationRule(paymentRequestDTO, rule));
 		
