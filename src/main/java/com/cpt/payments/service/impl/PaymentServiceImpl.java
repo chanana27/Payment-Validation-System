@@ -6,8 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.cpt.payments.cache.ValidationRulesCache;
 import com.cpt.payments.constants.ValidatorEnum;
-import com.cpt.payments.dao.ValidatorRuleDao;
+import com.cpt.payments.dao.ValidationRuleDAO;
 import com.cpt.payments.dto.PaymentRequestDTO;
 import com.cpt.payments.dto.PaymentResponseDTO;
 import com.cpt.payments.service.interfaces.PaymentService;
@@ -23,23 +24,26 @@ public class PaymentServiceImpl implements PaymentService {
 	@Value("${validator.rules}")
 	String validatorRules;
 	
-	private List<String> activeValidationRules;
-	
 	private ApplicationContext applicationContext;
-	private ValidatorRuleDao validatorRuleDao;
+	private ValidationRuleDAO validatorRuleDao;
+	private ValidationRulesCache validationRulesCache;
 	
 	
-	public PaymentServiceImpl(ApplicationContext applicationContext, ValidatorRuleDao validatorRuleDao) {
+	public PaymentServiceImpl(ApplicationContext applicationContext,
+			ValidationRuleDAO validatorRuleDao,
+			ValidationRulesCache validationRulesCache) {
 		this.applicationContext = applicationContext;
 		this.validatorRuleDao = validatorRuleDao;
+		this.validationRulesCache = validationRulesCache;
 	}
 	
 	@Override
 	public PaymentResponseDTO validateAndInitiatePayment(PaymentRequestDTO paymentRequestDTO) {
 		log.info("Received paymentRequestDTO as {}", paymentRequestDTO);
 		
-		
-		activeValidationRules.forEach(rule -> triggerValidationRule(paymentRequestDTO, rule));
+		validationRulesCache.getValidationRulesList().forEach(rule -> {
+			triggerValidationRule(paymentRequestDTO, rule);
+		}); 
 		
 		
 		log.info("Payment Request Validated successfully. All rules passed");
@@ -69,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
 			if(validator != null) {
 				log.info("Calling validator rule {}", rule);
 				validator.validate(paymentRequestDTO);
-			}
+			} 
 		}
 		
 		if(validatorClass == null || validator == null) {
@@ -78,12 +82,11 @@ public class PaymentServiceImpl implements PaymentService {
 					validatorClass, validator);
 		}
 		return rule;
-	}
+	} 
 	
 	@PostConstruct
-	private List<String> loadActiveValidationRules(){
-		activeValidationRules = validatorRuleDao.loadActiveValidatorNames();
-		log.info("Loaded activeValidatorRules form Database as {}", activeValidationRules);
-		return activeValidationRules;
+	private void loadActiveValidationRules(){
+		validationRulesCache.loadValidatorRulesAndParams();
+		log.info("Loaded validator rules from cache");
 	}
 }

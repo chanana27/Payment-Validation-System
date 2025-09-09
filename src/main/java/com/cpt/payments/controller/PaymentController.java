@@ -30,17 +30,8 @@ public class PaymentController {
 		this.modelMapper = modelMapper;
 	}
 	
-
 	@PostMapping("/add")
 	public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest paymentRequest) {
-		
-		// Logging levels
-		log.trace("this is trace");
-		log.debug("this is debug");
-		log.info("this is info");
-		log.warn("this is warn");
-		log.error("this is error");
-		
 		
 		log.info("Received Create Payment Request as {}", paymentRequest);
 		
