@@ -13,6 +13,6 @@ public class Payment {
     private String country;
     private String merchantTxnRef;
     private String paymentMethod;
-    private String providerId;
+    private String provider;
     private String paymentType;
 }
