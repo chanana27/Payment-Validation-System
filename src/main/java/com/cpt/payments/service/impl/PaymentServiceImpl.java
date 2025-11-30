@@ -37,9 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-	@Value("${validator.rules}")
-	String validatorRules;
-
 	private ApplicationContext applicationContext;
 	private ValidationRuleDAO validatorRuleDao;
 	private ValidationRulesCache validationRulesCache;
@@ -151,6 +148,8 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	private TransactionRes createPayment(PaymentRequestDTO paymentRequestDTO) {
+		log.info("Create Payment method called");
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 

@@ -52,3 +52,7 @@ Thumbs.db
 .factorypath
 .project
 .settings/
+
+application-local.properties
+application-dev.properties
+
