@@ -8,7 +8,9 @@ public enum ErrorCodeEnum {
 		DUPLICATE_MERCHANT_TXN_REF("10003", "Duplicate entry for merchant payment request"),
 		PAYMENT_NOT_SAVED("10004", "Unable to save payment in DB, please try again later"),
 		PAYMENT_ATTEMPT_LIMIT_EXCEED("10005", "Payment attempt limit reached. Please try again after some time!"),
-		SERVICE_UNAVAILABLE("1006", "Service Unavailable! Please try again later.");
+		SERVICE_UNAVAILABLE("1006", "Service Unavailable! Please try again later."),
+		AUTHENTICATION_FAILED("1007", "Request was not authenticated!"),
+		HMAC_INVALID("1008", "Received HMAC was either empty or null");
 
 	    private final String errorCode;
 	    private final String errorMessage;

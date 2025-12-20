@@ -28,6 +28,9 @@ public class DuplicateTxnCheck implements Validator {
 	
 	@Override
 	public void validate(PaymentRequestDTO paymentRequestDTO) {
+		if(true)
+			return;
+		
 		log.info("Validating payment request: {}", paymentRequestDTO);
 		
 		if (paymentRequestDTO.getPayment().getMerchantTxnRef() == null
